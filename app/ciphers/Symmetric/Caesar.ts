@@ -1,7 +1,6 @@
 import { SymmetricCipher } from "../module.js";
 import { Alphabet, DefaultSingleton } from "../../module.js";
 
-
 export class Caesar implements SymmetricCipher {
 	alphabet: Alphabet;
 	secret: string;
@@ -9,8 +8,8 @@ export class Caesar implements SymmetricCipher {
 
 	constructor(
 		secret: string,
-		alphabet: Alphabet = DefaultSingleton.getInstance(),
-		forward: boolean = true
+		forward: boolean = true,
+		alphabet: Alphabet = DefaultSingleton.getInstance()
 	) {
 		this.alphabet = alphabet;
 
@@ -30,7 +29,12 @@ export class Caesar implements SymmetricCipher {
 			const resultNumbers = indexes.map((index) => {
 				if (this.forward) index += shift;
 				else index -= shift;
+				
 				index %= this.alphabet.getLength();
+
+				if (index < 0) index += this.alphabet.getLength();
+				if (index >= this.alphabet.getLength()) index -= this.alphabet.getLength();
+
 				return index;
 			});
 
@@ -49,10 +53,12 @@ export class Caesar implements SymmetricCipher {
 			const resultNumbers = indexes.map((index) => {
 				if (this.forward) index -= shift;
 				else index += shift;
+
 				index %= this.alphabet.getLength();
-				if (index < 0) 
-					if (this.forward) index += this.alphabet.getLength();
-					else index -= this.alphabet.getLength();
+
+				if (index < 0) index += this.alphabet.getLength();
+				if (index >= this.alphabet.getLength()) index -= this.alphabet.getLength();
+
 				return index;
 			});
 
