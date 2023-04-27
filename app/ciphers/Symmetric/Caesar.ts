@@ -50,7 +50,9 @@ export class Caesar implements SymmetricCipher {
 				if (this.forward) index -= shift;
 				else index += shift;
 				index %= this.alphabet.getLength();
-				if (index < 0) index += this.alphabet.getLength();
+				if (index < 0) 
+					if (this.forward) index += this.alphabet.getLength();
+					else index -= this.alphabet.getLength();
 				return index;
 			});
 
