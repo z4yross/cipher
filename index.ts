@@ -1,1 +1,3 @@
-export * as Cipher from "./app/module.js";
+import * as Cipher from './app/module.js';
+
+export default Cipher;

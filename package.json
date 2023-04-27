@@ -1,14 +1,17 @@
 {
-  "name": "be",
+  "name": "cipher",
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "index.js",
+  "main": "dist/module.js",
+  "types": "dist/module.d.ts",
+  "repository": "github:z4yross/cipher",
   "scripts": {
     "server": "npx tsx watch ./index.ts",
     "dev": "cross-env NODE_ENV=development npm run server",
     "test": "jest",
-    "watch:dev": "npm run dev"
+    "watch:dev": "npm run dev",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
