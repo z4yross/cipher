@@ -1,6 +1,6 @@
 import { ASCIISingleton } from "./ASCII.js";
 import { AlphanumericSingleton } from "./Alphanumeric.js";
-import { CustomAlphabet } from "./CustomAlphabet.js";
+import { CustomAlphabetSingleton } from "./CustomAlphabet.js";
 import { DefaultSingleton } from "./Default.js";
 import { NumbersSingleton } from "./Numbers.js";
 import { SpanishSingleton } from "./Spanish.js";
@@ -11,7 +11,7 @@ export const alphabets = {
     "Default": DefaultSingleton,
     "Numbers": NumbersSingleton,
     "Spanish": SpanishSingleton,
-    "custom": CustomAlphabet
+    "custom": CustomAlphabetSingleton
 };
 
 
