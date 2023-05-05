@@ -14,8 +14,8 @@ export const alphabets = {
     "Numbers": NumbersSingleton,
     "Spanish": SpanishSingleton,
     "custom": CustomAlphabetSingleton,
-    "simple": SimpleSingleton,
-    "simpleNumbers": SimpleNumbersSingleton
+    "Simple": SimpleSingleton,
+    "SimpleNumbers": SimpleNumbersSingleton
 };
 
 export * from "./Alphanumeric.js";
