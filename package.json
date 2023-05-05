@@ -1,6 +1,6 @@
 {
   "name": "z4cipher",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "type": "module",
   "description": "",
   "main": "dist/module.js",
