@@ -96,7 +96,7 @@ export class Playfair implements SymmetricCipher {
 				letter === diagrams[currentX][0]
 			) {
 				diagrams[currentX].push(this.EMPTY_LETTER);
-				currentX++;
+				continue;
 			}
 
 			diagrams[currentX].push(letter);
@@ -201,14 +201,7 @@ export class Playfair implements SymmetricCipher {
 	decrypt(text: string): string {
 		try {
 			const diagrams = this.createDiagrams(text);
-            // console.log(this.grid);
-            // console.log(this.letterMap);
-            // console.log(diagrams);
             const resultDiagrams = diagrams.map((diagram) => {
-                // console.log(diagram);
-                // console.log(this.letterMap.get(diagram[0]));
-                // console.log(this.letterMap.get(diagram[1]));
-
                 if (this.letterMap.get(diagram[0])[0] === this.letterMap.get(diagram[1])[0]) {
                     return this.shiftUp(diagram);
                 }
