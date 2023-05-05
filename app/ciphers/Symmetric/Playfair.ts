@@ -89,14 +89,16 @@ export class Playfair implements SymmetricCipher {
 		let currentX = 0;
 
 		for (let i = 0; i < text.length; i++) {
-			const letter = text[i];
+			const letter = text[i] == "J" ? "I" : text[i];
 			if (!diagrams[currentX]) diagrams[currentX] = [];
 			if (
 				diagrams[currentX].length === 1 &&
 				letter === diagrams[currentX][0]
 			) {
 				diagrams[currentX].push(this.EMPTY_LETTER);
+				--i;
 				currentX++;
+				continue;
 			}
 
 			diagrams[currentX].push(letter);
@@ -104,6 +106,10 @@ export class Playfair implements SymmetricCipher {
 			if (diagrams[currentX].length >= 2) {
 				currentX++;
 			}
+		}
+
+		if (diagrams[diagrams.length - 1].length === 0) {
+			diagrams.pop();
 		}
 
 		if (diagrams[diagrams.length - 1].length === 1) {
@@ -176,7 +182,7 @@ export class Playfair implements SymmetricCipher {
 		try {
 			const diagrams = this.createDiagrams(text);
             const resultDiagrams = diagrams.map((diagram) => {
-
+				console.log(diagram);
                 if (this.letterMap.get(diagram[0])[0] === this.letterMap.get(diagram[1])[0]) {
                     return this.shitftDown(diagram);
                 }
@@ -201,14 +207,7 @@ export class Playfair implements SymmetricCipher {
 	decrypt(text: string): string {
 		try {
 			const diagrams = this.createDiagrams(text);
-            // console.log(this.grid);
-            // console.log(this.letterMap);
-            // console.log(diagrams);
             const resultDiagrams = diagrams.map((diagram) => {
-                // console.log(diagram);
-                // console.log(this.letterMap.get(diagram[0]));
-                // console.log(this.letterMap.get(diagram[1]));
-
                 if (this.letterMap.get(diagram[0])[0] === this.letterMap.get(diagram[1])[0]) {
                     return this.shiftUp(diagram);
                 }

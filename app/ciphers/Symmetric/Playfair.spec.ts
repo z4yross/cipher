@@ -16,15 +16,15 @@ describe("Playfair", () => {
 	});
 
 	// // Tests that encrypt method returns an empty string when given an empty string.
-	// it("test_encrypt_empty_string", () => {
-	// 	const playfair = new Playfair("7");
-	// 	const result = playfair.encrypt("");
+	// it("test_encrypt_same_char", () => {
+	// 	const playfair = new Playfair("NORIA");
+	// 	const result = playfair.encrypt("BALLOON");
 	// 	expect(result).toBe("");
 	// });
 
 	// // Tests that decrypt method returns an empty string when given an empty string.
-	// it("test_decrypt_empty_string", () => {
-	// 	const playfair = new Playfair("7");
+	// it("test_decrypt_same_char", () => {
+	// 	const playfair = new Playfair("NORIA");
 	// 	const result = playfair.decrypt("");
 	// 	expect(result).toBe("");
 	// });
