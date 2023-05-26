@@ -1,6 +1,6 @@
 {
   "name": "z4cipher",
-  "version": "0.2.12",
+  "version": "0.3.0",
   "type": "module",
   "description": "",
   "main": "dist/module.js",
@@ -27,5 +27,8 @@
     "ts-node": "^10.9.1",
     "tsx": "^3.12.6",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "mathjs": "^11.8.0"
   }
 }

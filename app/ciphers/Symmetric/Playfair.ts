@@ -182,7 +182,6 @@ export class Playfair implements SymmetricCipher {
 		try {
 			const diagrams = this.createDiagrams(text);
             const resultDiagrams = diagrams.map((diagram) => {
-				console.log(diagram);
                 if (this.letterMap.get(diagram[0])[0] === this.letterMap.get(diagram[1])[0]) {
                     return this.shitftDown(diagram);
                 }
