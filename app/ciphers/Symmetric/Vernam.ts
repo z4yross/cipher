@@ -18,7 +18,8 @@ export class Vernam implements SymmetricCipher {
 		if (alphabet) this.alphabet = alphabet;
 
 		this.binary = binary;
-		if (!binary) this.secret = this.textToBinaryAlphabet(secret, addjustBitsOnKey);
+		if (!binary)
+			this.secret = this.textToBinaryAlphabet(secret, addjustBitsOnKey);
 	}
 
 	modulus(A: number, C: number): number {
@@ -91,10 +92,9 @@ export class Vernam implements SymmetricCipher {
 			const keyIndexes = this.alphabet.indexString(this.secret);
 
 			const res = wordIndexes.map((index, i) => {
-				return this.modulus(
-					index ^ keyIndexes[i],
-					this.alphabet.getLength()
-				);
+				const key_index = keyIndexes[i];
+				const r = index ^ key_index;
+				return this.modulus(r, this.alphabet.getLength());
 			});
 
 			return this.alphabet.letterString(res);
@@ -116,12 +116,14 @@ export class Vernam implements SymmetricCipher {
 			const n = text.length;
 			const m = this.secret.length;
 
-			const word_indexes = this.alphabet.indexString(text);
-			const key_indexes = this.alphabet.indexString(this.secret);
+			const word_indexes = text.split("").map((char) => Number(char));
+			const key_indexes = this.secret
+				.split("")
+				.map((char) => Number(char));
 
 			// bit-wise XOR
 			const res = word_indexes.map((index, i) => {
-				const key_index = key_indexes[i % m];
+				const key_index = key_indexes[i];
 				const r = index ^ key_index;
 				return this.modulus(r, this.alphabet.getLength());
 			});

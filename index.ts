@@ -16,7 +16,7 @@ const decrypt2 = hill2.decrypt("HCRZSSXNSP");
 console.log(res2);
 console.log(decrypt2);
 
-const customAlphabet = Cipher.CustomAlphabetSingleton.getInstance('abcdefghijklmnopqrstuvwxyz0123456789 ');
+const customAlphabet = Cipher.CustomAlphabetSingleton.getInstance('abcdefghijklmnopqrstuvwxyz ');
 
 const vigenere = new Cipher.Vigenere('pxlmvmsydofuyrvzwc tnlebnecvgdupahfzzlmnyih', true, customAlphabet);
 const res3 = vigenere.encrypt('mr mustard with the candlestick in the hall');
@@ -32,14 +32,14 @@ console.log(decrypt4);
 
 const binaryAlphabet = Cipher.BinarySingleton.getInstance();
 
-const vernan = new Cipher.Vernam('keydepruebat', false, customAlphabet, true);
-const res5 = vernan.encrypt(vernan.textToBinaryAlphabet('hola', true));
+const vernan = new Cipher.Vernam('gravity', false, customAlphabet, true);
+const res5 = vernan.encrypt(vernan.textToBinaryAlphabet('tonto es el que hace tonterias', true));
 const decrypt5 = vernan.decrypt(res5);
 console.log(res5, vernan.binaryToTextAlphabet(res5, true));
 console.log(decrypt5, vernan.binaryToTextAlphabet(decrypt5, true));
 
-const vernan2 = new Cipher.Vernam('keydepruebat', true, customAlphabet);
-const res6 = vernan2.encryptText('hola');
+const vernan2 = new Cipher.Vernam('gravity', true, customAlphabet);
+const res6 = vernan2.encryptText('tonto es el que hace tonterias');
 const decrypt6 = vernan2.decryptText(res6);
 console.log(res6);
 console.log(decrypt6);
