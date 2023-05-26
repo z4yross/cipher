@@ -1,10 +1,15 @@
 import { SymmetricCipher } from "../module.js";
 import { Alphabet, SimpleSingleton } from "../../module.js";
 
+import * as math from "mathjs";
+
 export class Hill implements SymmetricCipher {
 	alphabet: Alphabet;
 	secret: string;
 	forward: boolean;
+
+	size: number;
+	secretList: number[];
 
 	constructor(
 		secret: string,
@@ -15,54 +20,146 @@ export class Hill implements SymmetricCipher {
 		this.secret = secret;
 
 		if (alphabet) this.alphabet = alphabet;
+
+		this.secretList = this.secret.split(",").map((n) => parseInt(n));
+
+		let len = Math.sqrt(this.secretList.length);
+		if (len != Math.floor(len))
+			throw new Error("Secret must be a square matrix");
+
+		this.size = Math.floor(len);
 	}
 
-    modulus(A: number, C: number): number{
-        if(A >= 0) return A % C;
-        else return C + (A % C);
-    }
+	modulus(A: number, C: number): number {
+		if (A >= 0) return A % C;
+		else return C + (A % C);
+	}
 
-    det(matrix: number[][]): number {
-        return 0;
-    }
+	minorMatrix(matrix: math.Matrix, A: number, B: number): math.Matrix {
+		const size = this.size - 1;
+		let res = math.zeros(size, size) as math.Matrix;
 
-    coffactorMatrix(matrix: number[][], A: number, B: number): number[][] {
-        return undefined
-    }
+		let i = 0;
+		let j = 0;
 
-    inverseMatrix(matrix: number[][]): number[][] {
-        // for every cofactor
-        // coff_x(A)^t * det(A)^-1 
-        // det(A)^-1 is the modular
-        return undefined;
-    }
+		for (let row = 0; row < this.size; row++) {
+			if (row === A) continue;
+			for (let col = 0; col < this.size; col++) {
+				if (col === B) continue;
+				res = math.subset(res, math.index(i, j), matrix.get([row, col]));
+				j++;
+			}
+			i++;
+			j = 0;
+		}
 
-    modularInverse(A: number, C:number): number {
-        let B = 0;
+		return res;
+	}
 
-        for(B; B < C; B++)
-            if(((A * B) % C) == 1) return B
+	coffactorMatrix(matrix: math.Matrix): math.Matrix {
+		let res = math.matrix(matrix.valueOf());
 
-        return undefined;
-    }
+		for (let i = 0; i < this.size; i++) {
+			for (let j = 0; j < this.size; j++) {
+				const minor = this.minorMatrix(matrix, i, j);
+				const minorDet = math.det(minor);
+                const sign = Math.pow(-1, i + j);
+				res = math.subset(res, math.index(i, j), minorDet * sign);
+			}
+		}
 
-    vectorByMatrix(vector: number[], matrix: number[][]) {
-        let res = [];
+		return res;
+	}
 
-        matrix.forEach((value) => {
-            let factor = 0;
-            value.forEach((v, i) => factor += v*vector[i])
-            res.push(factor)
-        })
+	adjointMatrix(matrix: math.Matrix): math.Matrix {
+		const cofactor = this.coffactorMatrix(matrix);
+		return math.transpose(cofactor);
+	}
 
-        return res;
-    }
+	inverseMatrix(matrix: math.Matrix): math.Matrix {
+		const detMod = this.modulus(
+			math.det(matrix),
+			this.alphabet.getLength()
+		);
+
+		const modularInverse = this.modularInverse(
+			detMod,
+			this.alphabet.getLength()
+		);
+
+		if (modularInverse === undefined)
+			throw new Error("No modular inverse found");
+
+		const adjoint = this.adjointMatrix(matrix);
+		const inv = math.multiply(adjoint, modularInverse);
+
+		for (let i = 0; i < this.size; i++) {
+			for (let j = 0; j < this.size; j++) {
+				const val = inv.get([i, j]);
+				math.subset(
+					inv,
+					math.index(i, j),
+					this.modulus(val, this.alphabet.getLength())
+				);
+			}
+		}
+
+		return inv;
+	}
+
+	modularInverse(A: number, C: number): number {
+		let B = 0;
+
+		for (B; B < C; B++) if ((A * B) % C == 1) return B;
+
+		return undefined;
+	}
+
+	vectorByMatrix(vector: math.Matrix, matrix: math.Matrix): math.Matrix {
+		return math.multiply(vector, matrix);
+	}
+
+	secretToMatrix(secret: number[]): number[][] {
+		const matrix = [];
+		for (let i = 0; i < this.size; i++) {
+			const row = [];
+			for (let j = 0; j < this.size; j++) {
+				row.push(secret[i * this.size + j]);
+			}
+			matrix.push(row);
+		}
+		return matrix;
+	}
 
 	encrypt(text: string): string {
 		try {
-            // P is text divided in n tokens echa of 3 chars, a token is a vector len 3
-            // C = PK
-			return '';
+			const K = math.matrix(this.secretToMatrix(this.secretList));
+
+			const P_f = text
+				.split("")
+				.map((char) => this.alphabet.indexString(char));
+
+			const C_f = [];
+			for (let i = 0; i < P_f.length; i += this.size) {
+				const P_I = P_f.slice(i, i + this.size);
+
+                if (P_I.length === 0) break;
+                while (P_I.length < this.size) P_I.push([0]);
+
+				const P = math.transpose(math.matrix(P_I));
+
+				const K_P = math.multiply(P, K);
+				const K_P_list = K_P.valueOf();
+
+				const C = (K_P_list[0] as number[]).map((n) =>
+					this.modulus(n, this.alphabet.getLength())
+				);
+
+				C_f.push(...C);
+			}
+
+			const C = this.alphabet.letterString(C_f);
+			return C;
 		} catch (error) {
 			throw error;
 		}
@@ -70,8 +167,34 @@ export class Hill implements SymmetricCipher {
 
 	decrypt(text: string): string {
 		try {
-            // P = CK^-1
-            return '';
+			const K = math.matrix(this.secretToMatrix(this.secretList));
+			const K_inv = this.inverseMatrix(K);
+
+			const P_f = text
+				.split("")
+				.map((char) => this.alphabet.indexString(char));
+
+			const C_f = [];
+			for (let i = 0; i < P_f.length; i += this.size) {
+				const P_I = P_f.slice(i, i + this.size);
+
+                if (P_I.length === 0) break;
+                while (P_I.length < this.size) P_I.push([0]);
+
+				const P = math.transpose(math.matrix(P_I));
+
+				const P_Kinv = math.multiply(P, K_inv);
+				const P_K_list = P_Kinv.valueOf();
+
+				const C = (P_K_list[0] as number[]).map((n) =>
+					this.modulus(n, this.alphabet.getLength())
+				);
+
+				C_f.push(...C);
+			}
+
+			const C = this.alphabet.letterString(C_f);
+			return C;
 		} catch (error) {
 			throw error;
 		}
